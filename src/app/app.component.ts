@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
       const flattened: number[] = this.flattenArray(jsonData);
       const typedArray: Float32Array = new Float32Array(flattened);
 
-      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(typedArray), 3));
+      geometry.setAttribute('position', new THREE.BufferAttribute(typedArray, 3));
 
       const material = new THREE.PointsMaterial({ color: colors[i], size: 0.5 });
       const points = new THREE.Points(geometry, material);
