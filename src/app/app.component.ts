@@ -3,11 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-interface Vertex {
-  x: number;
-  y: number;
-}
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -39,16 +34,22 @@ export class AppComponent implements OnInit {
     const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0x00ffff];
 
     for (let i = 0; i < 5; i++) {
+      // Load the vector data
       const jsonData: number[][] = await fetch(`/assets/embeddings${i + 1}.json`).then(res => res.json());
-      const geometry = new THREE.BufferGeometry();
 
+      // Flatten array and convert to Float32Array
       const flattened: number[] = this.flattenArray(jsonData);
       const typedArray: Float32Array = new Float32Array(flattened);
 
+      // Create a buffer geometry and set position attribute
+      const geometry = new THREE.BufferGeometry();
       geometry.setAttribute('position', new THREE.BufferAttribute(typedArray, 3));
 
-      const material = new THREE.PointsMaterial({ color: colors[i], size: 0.5 });
+      // Create a point cloud
+      const material = new THREE.PointsMaterial({ color: colors[i], size: 0.5, fog: false});
       const points = new THREE.Points(geometry, material);
+
+      // Add the point cloud to the scene
       this.scene.add(points);
     }
 
@@ -58,8 +59,9 @@ export class AppComponent implements OnInit {
     this.renderer.render(this.scene, this.camera);
 
     this.camera.position.z = 5;
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
 
+    // Set up orbit controls
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.addEventListener('change', () => this.renderer.render(this.scene, this.camera));
 
     const animate = () => {
